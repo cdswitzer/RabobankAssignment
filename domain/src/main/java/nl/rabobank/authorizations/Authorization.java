@@ -1,7 +1,6 @@
 package nl.rabobank.authorizations;
 
-public enum Authorization
-{
+public enum Authorization {
     READ,
     WRITE
 }
