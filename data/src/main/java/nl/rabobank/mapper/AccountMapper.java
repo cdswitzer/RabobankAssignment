@@ -7,10 +7,12 @@ import nl.rabobank.account.Account;
 import nl.rabobank.account.PaymentAccount;
 import nl.rabobank.account.SavingsAccount;
 import nl.rabobank.document.AccountDocument;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AccountMapper {
 
-    public static AccountDocument toDocument(Account account) {
+    public AccountDocument toDocument(Account account) {
         return switch (account) {
             case PaymentAccount(String accountNumber, String accountHolderName, Double balance) ->
                 AccountDocument.builder()
@@ -30,7 +32,7 @@ public class AccountMapper {
         };
     }
 
-    public static Account toDomain(AccountDocument document) {
+    public Account toDomain(AccountDocument document) {
         return switch (document.getAccountType()) {
             case PAYMENT ->
                 new PaymentAccount(document.getAccountNumber(), document.getAccountHolderName(), document.getBalance());

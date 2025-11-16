@@ -31,8 +31,7 @@
         <dependency>
             <groupId>nl.rabobank</groupId>
             <artifactId>rabobank-assignment-domain</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

@@ -8,10 +8,12 @@ import nl.rabobank.account.PaymentAccount;
 import nl.rabobank.account.SavingsAccount;
 import nl.rabobank.dto.AccountRequest;
 import nl.rabobank.dto.AccountResponse;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AccountApiMapper {
 
-    public static Account toDomain(AccountRequest request) {
+    public Account toDomain(AccountRequest request) {
         return switch (request.getAccountType()) {
             case PAYMENT ->
                 new PaymentAccount(
@@ -22,12 +24,11 @@ public class AccountApiMapper {
         };
     }
 
-    public static AccountResponse toResponse(Account account) {
+    public AccountResponse toResponse(Account account) {
         var accountType =
                 switch (account) {
                     case PaymentAccount p -> PAYMENT;
                     case SavingsAccount s -> SAVINGS;
-                    default -> throw new IllegalArgumentException("Unknown Account type");
                 };
 
         return AccountResponse.builder()

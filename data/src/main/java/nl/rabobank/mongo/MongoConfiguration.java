@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @Configuration
-@EnableMongoRepositories
+@EnableMongoRepositories(basePackages = "nl.rabobank.repository")
 @EnableConfigurationProperties(MongoProperties.class)
 @RequiredArgsConstructor
 public class MongoConfiguration extends AbstractMongoClientConfiguration {

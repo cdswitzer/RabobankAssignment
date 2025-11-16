@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class AccountDocument {
     @Id
     String accountNumber;
+
     String accountHolderName;
     Double balance;
     AccountType accountType;

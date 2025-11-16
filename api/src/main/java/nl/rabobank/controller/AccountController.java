@@ -3,6 +3,7 @@ package nl.rabobank.controller;
 import lombok.RequiredArgsConstructor;
 import nl.rabobank.dto.AccountRequest;
 import nl.rabobank.dto.AccountResponse;
+import nl.rabobank.mapper.AccountApiMapper;
 import nl.rabobank.service.AccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,10 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccountController {
 
     private final AccountService accountService;
+    private final AccountApiMapper accountApiMapper;
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccountResponse> create(@RequestBody AccountRequest request) {
         var account = accountService.createAccount(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(account);
+        var response = accountApiMapper.toResponse(account);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

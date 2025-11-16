@@ -3,6 +3,7 @@ package nl.rabobank.controller;
 import lombok.RequiredArgsConstructor;
 import nl.rabobank.dto.PowerOfAttorneyRequest;
 import nl.rabobank.dto.PowerOfAttorneyResponse;
+import nl.rabobank.mapper.PowerOfAttorneyApiMapper;
 import nl.rabobank.service.AccountService;
 import nl.rabobank.service.PowerOfAttorneyService;
 import org.springframework.http.HttpStatus;
@@ -19,19 +20,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class PowerOfAttorneyController {
 
     private final PowerOfAttorneyService powerOfAttorneyService;
-
     private final AccountService accountService;
+    private final PowerOfAttorneyApiMapper powerOfAttorneyApiMapper;
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PowerOfAttorneyResponse> grantAccess(@RequestBody PowerOfAttorneyRequest request) {
-        // TODO: use existsById?
-        var accountOpt = accountService.getAccountByNumber(request.getAccountNumber());
-        if (accountOpt.isEmpty()) {
+        if (!accountService.existsByAccountNumber(request.getAccountNumber())) {
             throw new IllegalArgumentException(
                     "No account found with number: %s".formatted(request.getAccountNumber()));
         }
 
         var powerOfAttorney = powerOfAttorneyService.grantAccess(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(powerOfAttorney);
+        var response = powerOfAttorneyApiMapper.toResponse(powerOfAttorney);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

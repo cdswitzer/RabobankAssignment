@@ -2,10 +2,12 @@ package nl.rabobank.mapper;
 
 import nl.rabobank.authorizations.PowerOfAttorney;
 import nl.rabobank.document.PowerOfAttorneyDocument;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PowerOfAttorneyMapper {
 
-    public static PowerOfAttorneyDocument toDocument(PowerOfAttorney domain) {
+    public PowerOfAttorneyDocument toDocument(PowerOfAttorney domain) {
         return PowerOfAttorneyDocument.builder()
                 .granteeName(domain.granteeName())
                 .grantorName(domain.grantorName())
@@ -14,7 +16,7 @@ public class PowerOfAttorneyMapper {
                 .build();
     }
 
-    public static PowerOfAttorney toDomain(PowerOfAttorneyDocument doc) {
+    public PowerOfAttorney toDomain(PowerOfAttorneyDocument doc) {
         return PowerOfAttorney.builder()
                 .granteeName(doc.getGranteeName())
                 .grantorName(doc.getGrantorName())

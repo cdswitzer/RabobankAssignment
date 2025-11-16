@@ -1,6 +1,6 @@
 package nl.rabobank.account;
 
-public interface Account {
+public sealed interface Account permits PaymentAccount, SavingsAccount {
     String accountNumber();
 
     String accountHolderName();

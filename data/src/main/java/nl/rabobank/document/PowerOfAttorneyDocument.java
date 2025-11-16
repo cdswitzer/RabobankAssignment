@@ -17,6 +17,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class PowerOfAttorneyDocument {
     @Id
     String id;
+
     String granteeName;
     String grantorName;
     Account account;
