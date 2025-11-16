@@ -26,8 +26,8 @@ class PowerAttorneyMapperTest {
 
     @ParameterizedTest(name = "[{index}] {6}")
     @CsvSource({
-            "John Doe, Frank Bank, READ, NL123456, 1000.0, PAYMENT, Grant READ",
-            "Mary Doe, Pieter Post, WRITE, NL654321, 500.0, SAVINGS, Grant WRITE",
+        "John Doe, Frank Bank, READ, NL123456, 1000.0, PAYMENT, Grant READ",
+        "Mary Doe, Pieter Post, WRITE, NL654321, 500.0, SAVINGS, Grant WRITE",
     })
     void toDocument_shouldMap_fromPowerOfAttorney(
             String grantorName,
@@ -58,16 +58,17 @@ class PowerAttorneyMapperTest {
 
     @ParameterizedTest(name = "[{index}] {6}")
     @CsvSource({
-            "John Doe, Frank Bank, READ, NL123456, 1000.0, PAYMENT, Grant READ",
-            "Mary Doe, Pieter Post, WRITE, NL654321, 500.0, SAVINGS, Grant WRITE",
+        "John Doe, Frank Bank, READ, NL123456, 1000.0, PAYMENT, Grant READ",
+        "Mary Doe, Pieter Post, WRITE, NL654321, 500.0, SAVINGS, Grant WRITE",
     })
-    void toDomain_shouldMap_fromDocument(String grantorName,
-                                         String granteeName,
-                                         Authorization authorization,
-                                         String accountNumber,
-                                         Double balance,
-                                         AccountType accountType,
-                                         String testName) {
+    void toDomain_shouldMap_fromDocument(
+            String grantorName,
+            String granteeName,
+            Authorization authorization,
+            String accountNumber,
+            Double balance,
+            AccountType accountType,
+            String testName) {
 
         var account = getAccount(accountNumber, grantorName, balance, accountType);
         var accountDocument = accountMapper.toDocument(account);
@@ -79,31 +80,29 @@ class PowerAttorneyMapperTest {
                 .authorization(authorization)
                 .build();
 
-
         var powerOfAttorney = mapper.toDomain(powerOfAttorneyDocument);
 
-        assertThat(powerOfAttorney)
-                .isNotNull()
-                .satisfies(p -> {
-                    assertThat(p.granteeName()).isEqualTo(granteeName);
-                    assertThat(p.grantorName()).isEqualTo(grantorName);
-                    assertThat(p.account()).isEqualTo(account);
-                    assertThat(p.authorization()).isEqualTo(authorization);
-                });
+        assertThat(powerOfAttorney).isNotNull().satisfies(p -> {
+            assertThat(p.granteeName()).isEqualTo(granteeName);
+            assertThat(p.grantorName()).isEqualTo(grantorName);
+            assertThat(p.account()).isEqualTo(account);
+            assertThat(p.authorization()).isEqualTo(authorization);
+        });
     }
 
     @ParameterizedTest(name = "[{index}] {6}")
     @CsvSource({
-            "John Doe, Frank Bank, READ, NL123456, 1000.0, PAYMENT, Grant READ",
-            "Mary Doe, Pieter Post, WRITE, NL654321, 500.0, SAVINGS, Grant WRITE",
+        "John Doe, Frank Bank, READ, NL123456, 1000.0, PAYMENT, Grant READ",
+        "Mary Doe, Pieter Post, WRITE, NL654321, 500.0, SAVINGS, Grant WRITE",
     })
-    void mapper_shouldReturnSameValue_forPowerOfAttorneyToDocumentToPowerOfAttorney(String grantorName,
-                                                                                    String granteeName,
-                                                                                    Authorization authorization,
-                                                                                    String accountNumber,
-                                                                                    Double balance,
-                                                                                    AccountType accountType,
-                                                                                    String testName) {
+    void mapper_shouldReturnSameValue_forPowerOfAttorneyToDocumentToPowerOfAttorney(
+            String grantorName,
+            String granteeName,
+            Authorization authorization,
+            String accountNumber,
+            Double balance,
+            AccountType accountType,
+            String testName) {
         var account = getAccount(accountNumber, grantorName, balance, accountType);
 
         var powerOfAttorney = PowerOfAttorney.builder()
@@ -116,28 +115,27 @@ class PowerAttorneyMapperTest {
         var document = mapper.toDocument(powerOfAttorney);
         var convertedPowerOfAttorney = mapper.toDomain(document);
 
-        assertThat(convertedPowerOfAttorney)
-                .isNotNull()
-                .satisfies(p -> {
-                    assertThat(p.granteeName()).isEqualTo(granteeName);
-                    assertThat(p.grantorName()).isEqualTo(grantorName);
-                    assertThat(p.account()).isEqualTo(account);
-                    assertThat(p.authorization()).isEqualTo(authorization);
-                });
+        assertThat(convertedPowerOfAttorney).isNotNull().satisfies(p -> {
+            assertThat(p.granteeName()).isEqualTo(granteeName);
+            assertThat(p.grantorName()).isEqualTo(grantorName);
+            assertThat(p.account()).isEqualTo(account);
+            assertThat(p.authorization()).isEqualTo(authorization);
+        });
     }
 
     @ParameterizedTest(name = "[{index}] {6}")
     @CsvSource({
-            "John Doe, Frank Bank, READ, NL123456, 1000.0, PAYMENT, Grant READ",
-            "Mary Doe, Pieter Post, WRITE, NL654321, 500.0, SAVINGS, Grant WRITE",
+        "John Doe, Frank Bank, READ, NL123456, 1000.0, PAYMENT, Grant READ",
+        "Mary Doe, Pieter Post, WRITE, NL654321, 500.0, SAVINGS, Grant WRITE",
     })
-    void mapper_shouldReturnSameValue_forDocumentToPowerOfAttorneyToDcoument(String grantorName,
-                                                                             String granteeName,
-                                                                             Authorization authorization,
-                                                                             String accountNumber,
-                                                                             Double balance,
-                                                                             AccountType accountType,
-                                                                             String testName) {
+    void mapper_shouldReturnSameValue_forDocumentToPowerOfAttorneyToDcoument(
+            String grantorName,
+            String granteeName,
+            Authorization authorization,
+            String accountNumber,
+            Double balance,
+            AccountType accountType,
+            String testName) {
         var account = getAccount(accountNumber, grantorName, balance, accountType);
         var accountDocument = accountMapper.toDocument(account);
 
@@ -147,7 +145,6 @@ class PowerAttorneyMapperTest {
                 .accountDocument(accountDocument)
                 .authorization(authorization)
                 .build();
-
 
         var powerOfAttorney = mapper.toDomain(powerOfAttorneyDocument);
         var convertedDocument = mapper.toDocument(powerOfAttorney);

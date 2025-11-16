@@ -1,11 +1,9 @@
 package nl.rabobank.mapper;
 
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import nl.rabobank.authorizations.PowerOfAttorney;
 import nl.rabobank.document.PowerOfAttorneyDocument;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 @Component
 @AllArgsConstructor

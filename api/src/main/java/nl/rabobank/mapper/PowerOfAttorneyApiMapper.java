@@ -13,10 +13,6 @@ public class PowerOfAttorneyApiMapper {
 
     private final AccountApiMapper accountApiMapper;
 
-    public PowerOfAttorney toDomain(PowerOfAttorneyRequest request) {
-        return toDomain(request, null);
-    }
-
     public PowerOfAttorney toDomain(PowerOfAttorneyRequest request, Account account) {
         return PowerOfAttorney.builder()
                 .grantorName(request.getGrantorName())
@@ -26,12 +22,12 @@ public class PowerOfAttorneyApiMapper {
                 .build();
     }
 
-    public PowerOfAttorneyResponse toResponse(PowerOfAttorney poa) {
+    public PowerOfAttorneyResponse toResponse(PowerOfAttorney powerOfAttorney) {
         return PowerOfAttorneyResponse.builder()
-                .grantorName(poa.grantorName())
-                .granteeName(poa.granteeName())
-                .authorization(String.valueOf(poa.authorization()))
-                .account(accountApiMapper.toResponse(poa.account()))
+                .grantorName(powerOfAttorney.grantorName())
+                .granteeName(powerOfAttorney.granteeName())
+                .authorization(String.valueOf(powerOfAttorney.authorization()))
+                .account(accountApiMapper.toResponse(powerOfAttorney.account()))
                 .build();
     }
 }
