@@ -1,4 +1,4 @@
-package nl.rabobank.mapper;
+package nl.rabobank.apimapper;
 
 import static nl.rabobank.account.AccountType.PAYMENT;
 import static nl.rabobank.account.AccountType.SAVINGS;

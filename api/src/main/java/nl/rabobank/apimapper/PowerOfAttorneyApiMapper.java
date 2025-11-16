@@ -1,4 +1,4 @@
-package nl.rabobank.mapper;
+package nl.rabobank.apimapper;
 
 import lombok.RequiredArgsConstructor;
 import nl.rabobank.account.Account;
