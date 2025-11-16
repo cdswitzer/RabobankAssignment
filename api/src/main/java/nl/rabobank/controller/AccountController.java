@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nl.rabobank.dto.AccountRequest;
 import nl.rabobank.dto.AccountResponse;
-import nl.rabobank.mapper.AccountApiMapper;
+import nl.rabobank.apimapper.AccountApiMapper;
 import nl.rabobank.service.AccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

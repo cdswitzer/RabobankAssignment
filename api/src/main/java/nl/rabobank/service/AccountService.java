@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import nl.rabobank.account.Account;
 import nl.rabobank.dto.AccountRequest;
 import nl.rabobank.exception.DuplicateAccountException;
-import nl.rabobank.mapper.AccountApiMapper;
+import nl.rabobank.apimapper.AccountApiMapper;
 import nl.rabobank.mapper.AccountMapper;
 import nl.rabobank.repository.AccountRepository;
 import org.springframework.stereotype.Service;

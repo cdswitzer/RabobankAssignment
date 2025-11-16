@@ -1,7 +1,6 @@
 package nl.rabobank.controller;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -16,7 +15,7 @@ import nl.rabobank.account.SavingsAccount;
 import nl.rabobank.dto.AccountRequest;
 import nl.rabobank.dto.AccountResponse;
 import nl.rabobank.exception.DuplicateAccountException;
-import nl.rabobank.mapper.AccountApiMapper;
+import nl.rabobank.apimapper.AccountApiMapper;
 import nl.rabobank.service.AccountService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -88,8 +87,8 @@ class AccountControllerTest {
                 .andExpect(jsonPath("$.balance").value(balance.toString()))
                 .andExpect(jsonPath("$.accountType").value(accountType));
 
-        verify(accountService, times(1)).createAccount(any(AccountRequest.class));
-        verify(accountApiMapper, times(1)).toResponse(account);
+        verify(accountService).createAccount(any(AccountRequest.class));
+        verify(accountApiMapper).toResponse(account);
     }
 
     @Test
@@ -110,7 +109,7 @@ class AccountControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.detail").value("Account already exists with number: NL123456"));
 
-        verify(accountService, times(1)).createAccount(any(AccountRequest.class));
+        verify(accountService).createAccount(any(AccountRequest.class));
     }
 
     @Test

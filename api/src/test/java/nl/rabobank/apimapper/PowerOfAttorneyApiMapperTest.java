@@ -1,4 +1,4 @@
-package nl.rabobank.mapper;
+package nl.rabobank.apimapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

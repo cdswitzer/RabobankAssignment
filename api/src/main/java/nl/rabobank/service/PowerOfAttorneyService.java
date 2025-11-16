@@ -5,7 +5,7 @@ import nl.rabobank.authorizations.PowerOfAttorney;
 import nl.rabobank.dto.PowerOfAttorneyRequest;
 import nl.rabobank.exception.UnknownAccountException;
 import nl.rabobank.mapper.AccountMapper;
-import nl.rabobank.mapper.PowerOfAttorneyApiMapper;
+import nl.rabobank.apimapper.PowerOfAttorneyApiMapper;
 import nl.rabobank.mapper.PowerOfAttorneyMapper;
 import nl.rabobank.repository.AccountRepository;
 import nl.rabobank.repository.PowerOfAttorneyRepository;
