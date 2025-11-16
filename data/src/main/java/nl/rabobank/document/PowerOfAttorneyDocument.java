@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nl.rabobank.account.Account;
 import nl.rabobank.authorizations.Authorization;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -20,6 +19,6 @@ public class PowerOfAttorneyDocument {
 
     String granteeName;
     String grantorName;
-    Account account;
+    AccountDocument accountDocument;
     Authorization authorization;
 }
