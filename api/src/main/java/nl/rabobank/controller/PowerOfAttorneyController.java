@@ -2,10 +2,10 @@ package nl.rabobank.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import nl.rabobank.apimapper.PowerOfAttorneyApiMapper;
 import nl.rabobank.dto.PowerOfAttorneyRequest;
 import nl.rabobank.dto.PowerOfAttorneyResponse;
 import nl.rabobank.exception.AccountNotFoundException;
-import nl.rabobank.apimapper.PowerOfAttorneyApiMapper;
 import nl.rabobank.service.AccountService;
 import nl.rabobank.service.PowerOfAttorneyService;
 import org.springframework.http.HttpStatus;
