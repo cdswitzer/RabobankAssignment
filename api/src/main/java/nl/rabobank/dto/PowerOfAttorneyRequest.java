@@ -1,20 +1,29 @@
 package nl.rabobank.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nl.rabobank.account.AccountType;
-import nl.rabobank.authorizations.Authorization;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class PowerOfAttorneyRequest {
-    private String granteeName;
+
+    @NotBlank(message = "grantorName is required")
     private String grantorName;
-    private Authorization authorization;
+
+    @NotBlank(message = "granteeName is required")
+    private String granteeName;
+
+    @NotBlank(message = "accountNumber is required")
     private String accountNumber;
-    private AccountType accountType;
+
+    @NotBlank(message = "accountType is required")
+    private String accountType;
+
+    @NotBlank(message = "authorization is required")
+    private String authorization;
 }

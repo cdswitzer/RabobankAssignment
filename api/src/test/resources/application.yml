@@ -1,0 +1,15 @@
+spring:
+  data:
+    mongodb:
+      database: test-db
+
+  logging:
+    level:
+      org.springframework.data.mongodb: DEBUG
+      nl.rabobank: DEBUG
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 8.0.5

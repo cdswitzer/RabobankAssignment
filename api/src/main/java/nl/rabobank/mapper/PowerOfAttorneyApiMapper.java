@@ -2,6 +2,7 @@ package nl.rabobank.mapper;
 
 import lombok.RequiredArgsConstructor;
 import nl.rabobank.account.Account;
+import nl.rabobank.authorizations.Authorization;
 import nl.rabobank.authorizations.PowerOfAttorney;
 import nl.rabobank.dto.PowerOfAttorneyRequest;
 import nl.rabobank.dto.PowerOfAttorneyResponse;
@@ -17,7 +18,7 @@ public class PowerOfAttorneyApiMapper {
         return PowerOfAttorney.builder()
                 .grantorName(request.getGrantorName())
                 .granteeName(request.getGranteeName())
-                .authorization(request.getAuthorization())
+                .authorization(Authorization.valueOf(request.getAuthorization()))
                 .account(account)
                 .build();
     }

@@ -1,8 +1,10 @@
 package nl.rabobank.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nl.rabobank.dto.PowerOfAttorneyRequest;
 import nl.rabobank.dto.PowerOfAttorneyResponse;
+import nl.rabobank.exception.AccountNotFoundException;
 import nl.rabobank.mapper.PowerOfAttorneyApiMapper;
 import nl.rabobank.service.AccountService;
 import nl.rabobank.service.PowerOfAttorneyService;
@@ -24,9 +26,9 @@ public class PowerOfAttorneyController {
     private final PowerOfAttorneyApiMapper powerOfAttorneyApiMapper;
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PowerOfAttorneyResponse> grantAccess(@RequestBody PowerOfAttorneyRequest request) {
+    public ResponseEntity<PowerOfAttorneyResponse> grantAccess(@Valid @RequestBody PowerOfAttorneyRequest request) {
         if (!accountService.existsByAccountNumber(request.getAccountNumber())) {
-            throw new IllegalArgumentException(
+            throw new AccountNotFoundException(
                     "No account found with number: %s".formatted(request.getAccountNumber()));
         }
 

@@ -4,6 +4,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import nl.rabobank.account.Account;
 import nl.rabobank.dto.AccountRequest;
+import nl.rabobank.exception.DuplicateAccountException;
 import nl.rabobank.mapper.AccountApiMapper;
 import nl.rabobank.mapper.AccountMapper;
 import nl.rabobank.repository.AccountRepository;
@@ -19,7 +20,7 @@ public class AccountService {
 
     public Account createAccount(AccountRequest request) {
         if (accountRepository.existsByAccountNumber(request.getAccountNumber())) {
-            throw new IllegalArgumentException("Account already exists with number: " + request.getAccountNumber());
+            throw new DuplicateAccountException("Account already exists with number: " + request.getAccountNumber());
         }
 
         var account = accountApiMapper.toDomain(request);

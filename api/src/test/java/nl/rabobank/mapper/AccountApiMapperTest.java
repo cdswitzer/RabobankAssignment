@@ -1,5 +1,7 @@
 package nl.rabobank.mapper;
 
+import static nl.rabobank.account.AccountType.PAYMENT;
+import static nl.rabobank.account.AccountType.SAVINGS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import nl.rabobank.account.AccountType;
@@ -27,7 +29,7 @@ class AccountApiMapperTest {
         "NL987654, Mary Doe, -500.0, SAVINGS, Savings account with negative balance"
     })
     void toDomain_shouldMap_fromRequest(
-            String accountNumber, String accountHolderName, Double balance, AccountType accountType, String testName) {
+            String accountNumber, String accountHolderName, Double balance, String accountType, String testName) {
         var request = AccountRequest.builder()
                 .accountNumber(accountNumber)
                 .accountHolderName(accountHolderName)
@@ -38,7 +40,7 @@ class AccountApiMapperTest {
         var account = mapper.toDomain(request);
 
         var accountTypeClass =
-                switch (accountType) {
+                switch (AccountType.valueOf(accountType)) {
                     case PAYMENT -> PaymentAccount.class;
                     case SAVINGS -> SavingsAccount.class;
                 };
@@ -47,6 +49,30 @@ class AccountApiMapperTest {
             assertThat(acc.accountNumber()).isEqualTo(accountNumber);
             assertThat(acc.accountHolderName()).isEqualTo(accountHolderName);
             assertThat(acc.balance()).isEqualTo(balance);
+        });
+    }
+
+    @ParameterizedTest
+    @CsvSource({"PAYMENT", "SAVINGS"})
+    void toDomain_shouldMap_fromRequestWithoutBalance(String accountType) {
+        var request = AccountRequest.builder()
+                .accountNumber("NL123456")
+                .accountHolderName("John Doe")
+                .accountType(accountType)
+                .build();
+
+        var account = mapper.toDomain(request);
+
+        var accountTypeClass =
+                switch (AccountType.valueOf(accountType)) {
+                    case PAYMENT -> PaymentAccount.class;
+                    case SAVINGS -> SavingsAccount.class;
+                };
+
+        assertThat(account).isNotNull().isInstanceOf(accountTypeClass).satisfies(acc -> {
+            assertThat(acc.accountNumber()).isEqualTo("NL123456");
+            assertThat(acc.accountHolderName()).isEqualTo("John Doe");
+            assertThat(acc.balance()).isEqualTo(0.0);
         });
     }
 

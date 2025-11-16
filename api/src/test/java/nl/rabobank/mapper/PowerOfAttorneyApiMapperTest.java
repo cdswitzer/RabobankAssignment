@@ -32,13 +32,13 @@ class PowerOfAttorneyApiMapperTest {
     void toDomain_shouldMap_fromPowerOfAttorneyRequest(
             String grantorName,
             String granteeName,
-            Authorization authorization,
+            String authorization,
             String accountNumber,
             Double balance,
-            AccountType accountType,
+            String accountType,
             String testName) {
 
-        var account = getAccount(accountNumber, grantorName, balance, accountType);
+        var account = getAccount(accountNumber, grantorName, balance, AccountType.valueOf(accountType));
         var powerOfAttorneyRequest = PowerOfAttorneyRequest.builder()
                 .grantorName(grantorName)
                 .granteeName(granteeName)
@@ -49,11 +49,11 @@ class PowerOfAttorneyApiMapperTest {
 
         var powerOfAttorney = mapper.toDomain(powerOfAttorneyRequest, account);
 
-        assertThat(powerOfAttorney).isNotNull().satisfies(p -> {
-            assertThat(p.granteeName()).isEqualTo(granteeName);
-            assertThat(p.grantorName()).isEqualTo(grantorName);
-            assertThat(p.account()).isEqualTo(account);
-            assertThat(p.authorization()).isEqualTo(authorization);
+        assertThat(powerOfAttorney).isNotNull().satisfies(poa -> {
+            assertThat(poa.granteeName()).isEqualTo(granteeName);
+            assertThat(poa.grantorName()).isEqualTo(grantorName);
+            assertThat(poa.account()).isEqualTo(account);
+            assertThat(poa.authorization().toString()).isEqualTo(authorization);
         });
     }
 
@@ -65,18 +65,18 @@ class PowerOfAttorneyApiMapperTest {
     void toResponse_shouldMap_fromPowerOfAttorney(
             String grantorName,
             String granteeName,
-            Authorization authorization,
+            String authorization,
             String accountNumber,
             Double balance,
-            AccountType accountType,
+            String accountType,
             String testName) {
-        var account = getAccount(accountNumber, grantorName, balance, accountType);
+        var account = getAccount(accountNumber, grantorName, balance, AccountType.valueOf(accountType));
 
         var powerOfAttorney = PowerOfAttorney.builder()
                 .granteeName(granteeName)
                 .grantorName(grantorName)
                 .account(account)
-                .authorization(authorization)
+                .authorization(Authorization.valueOf(authorization))
                 .build();
 
         var document = mapper.toResponse(powerOfAttorney);
@@ -84,7 +84,7 @@ class PowerOfAttorneyApiMapperTest {
         assertThat(document).isNotNull().satisfies(doc -> {
             assertThat(doc.getGranteeName()).isEqualTo(granteeName);
             assertThat(doc.getGrantorName()).isEqualTo(grantorName);
-            assertThat(doc.getAuthorization()).isEqualTo(authorization.toString());
+            assertThat(doc.getAuthorization()).isEqualTo(authorization);
             assertThat(doc.getAccount()).isEqualTo(accountApiMapper.toResponse(account));
         });
     }

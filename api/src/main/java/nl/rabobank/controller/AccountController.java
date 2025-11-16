@@ -1,5 +1,6 @@
 package nl.rabobank.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nl.rabobank.dto.AccountRequest;
 import nl.rabobank.dto.AccountResponse;
@@ -22,7 +23,7 @@ public class AccountController {
     private final AccountApiMapper accountApiMapper;
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AccountResponse> create(@RequestBody AccountRequest request) {
+    public ResponseEntity<AccountResponse> create(@Valid @RequestBody AccountRequest request) {
         var account = accountService.createAccount(request);
         var response = accountApiMapper.toResponse(account);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
