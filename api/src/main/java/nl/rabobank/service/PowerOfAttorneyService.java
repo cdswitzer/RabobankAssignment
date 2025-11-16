@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import nl.rabobank.apimapper.PowerOfAttorneyApiMapper;
 import nl.rabobank.authorizations.PowerOfAttorney;
 import nl.rabobank.dto.PowerOfAttorneyRequest;
-import nl.rabobank.exception.UnknownAccountException;
+import nl.rabobank.exception.AccountNotFoundException;
 import nl.rabobank.mapper.AccountMapper;
 import nl.rabobank.mapper.PowerOfAttorneyMapper;
 import nl.rabobank.repository.AccountRepository;
@@ -25,8 +25,8 @@ public class PowerOfAttorneyService {
     public PowerOfAttorney grantAccess(PowerOfAttorneyRequest request) {
         var accountDocument = accountRepository
                 .findByAccountNumber(request.getAccountNumber())
-                .orElseThrow(() -> new UnknownAccountException(
-                        "No account found for accountnumber: %s.".formatted(request.getAccountNumber())));
+                .orElseThrow(() -> new AccountNotFoundException(
+                        "No account found with number: %s".formatted(request.getAccountNumber())));
 
         var account = accountMapper.toDomain(accountDocument);
         var powerOfAttorney = powerOfAttorneyApiMapper.toDomain(request, account);
