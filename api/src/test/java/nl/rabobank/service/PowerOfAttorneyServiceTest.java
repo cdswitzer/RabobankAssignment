@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.Optional;
 import nl.rabobank.account.Account;
 import nl.rabobank.account.AccountType;
@@ -109,7 +110,7 @@ class PowerOfAttorneyServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenAccountNotFound() {
+    void findByAccountNumber_shouldThrowException_forNonExistingAccount() {
         PowerOfAttorneyRequest request = PowerOfAttorneyRequest.builder()
                 .granteeName("Alice")
                 .grantorName("Bob")
@@ -126,6 +127,67 @@ class PowerOfAttorneyServiceTest {
 
         verify(accountRepository).findByAccountNumber("NL999999");
         verify(powerOfAttorneyRepository, never()).save(any(PowerOfAttorneyDocument.class));
+    }
+
+    @Test
+    void findByGranteeName_shouldReturnList_forGranteeName() {
+        String grantee = "Alice";
+
+        var account = new PaymentAccount("NL111", "Bob", 100.0);
+        var accountDocument = new AccountMapper().toDocument(account);
+
+        var doc1 = PowerOfAttorneyDocument.builder()
+                .id("poa-1")
+                .granteeName(grantee)
+                .grantorName("Bob")
+                .authorization(Authorization.READ)
+                .accountDocument(accountDocument)
+                .build();
+
+        var doc2 = PowerOfAttorneyDocument.builder()
+                .id("poa-2")
+                .granteeName(grantee)
+                .grantorName("Charlie")
+                .authorization(Authorization.WRITE)
+                .accountDocument(accountDocument)
+                .build();
+
+        var poa1 = PowerOfAttorney.builder()
+                .granteeName(grantee)
+                .grantorName("Bob")
+                .authorization(Authorization.READ)
+                .account(account)
+                .build();
+
+        var poa2 = PowerOfAttorney.builder()
+                .granteeName(grantee)
+                .grantorName("Charlie")
+                .authorization(Authorization.WRITE)
+                .account(account)
+                .build();
+
+        when(powerOfAttorneyRepository.findByGranteeName(grantee)).thenReturn(List.of(doc1, doc2));
+        when(powerOfAttorneyMapper.toDomain(doc1)).thenReturn(poa1);
+        when(powerOfAttorneyMapper.toDomain(doc2)).thenReturn(poa2);
+
+        var result = powerOfAttorneyService.findByGranteeName(grantee);
+
+        assertThat(result).hasSize(2).containsExactly(poa1, poa2);
+
+        verify(powerOfAttorneyRepository).findByGranteeName(grantee);
+        verify(powerOfAttorneyMapper).toDomain(doc1);
+        verify(powerOfAttorneyMapper).toDomain(doc2);
+    }
+
+    @Test
+    void findByGranteeName_shouldReturnEmptyList_whenNoResults() {
+        when(powerOfAttorneyRepository.findByGranteeName("Unknown")).thenReturn(List.of());
+
+        var result = powerOfAttorneyService.findByGranteeName("Unknown");
+
+        assertThat(result).isEmpty();
+
+        verify(powerOfAttorneyRepository).findByGranteeName("Unknown");
     }
 
     private Account getAccount(

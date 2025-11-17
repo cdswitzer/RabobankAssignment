@@ -1,5 +1,6 @@
 package nl.rabobank.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import nl.rabobank.apimapper.PowerOfAttorneyApiMapper;
 import nl.rabobank.authorizations.PowerOfAttorney;
@@ -35,10 +36,9 @@ public class PowerOfAttorneyService {
         return powerOfAttorneyMapper.toDomain(powerOfAttorneyRepository.save(document));
     }
 
-    //    public List<PowerOfAttorney> getPowerOfAttorneysForGrantee(String grantee) {
-    //        return repository.findByGrantee(grantee)
-    //                .stream()
-    //                .map(PowerOfAttorneyMapper::toDomain)
-    //                .toList();
-    //    }
+    public List<PowerOfAttorney> findByGranteeName(String granteeName) {
+        return powerOfAttorneyRepository.findByGranteeName(granteeName).stream()
+                .map(powerOfAttorneyMapper::toDomain)
+                .toList();
+    }
 }
