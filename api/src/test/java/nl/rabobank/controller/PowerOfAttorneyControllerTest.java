@@ -1,11 +1,16 @@
 package nl.rabobank.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import nl.rabobank.account.Account;
 import nl.rabobank.account.AccountType;
 import nl.rabobank.account.PaymentAccount;
@@ -120,6 +125,68 @@ class PowerOfAttorneyControllerTest {
                         jsonPath("$.detail")
                                 .value(
                                         "{authorization=authorization is required, accountType=accountType is required, granteeName=granteeName is required}"));
+    }
+
+    @Test
+    void listByGrantee_shouldReturn200_withList() throws Exception {
+        var account = new PaymentAccount("NL1", "Alice", 100.0);
+
+        var poa1 = PowerOfAttorney.builder()
+                .grantorName("Alice")
+                .granteeName("Bob")
+                .authorization(Authorization.READ)
+                .account(account)
+                .build();
+
+        var poa2 = PowerOfAttorney.builder()
+                .grantorName("Charlie")
+                .granteeName("Bob")
+                .authorization(Authorization.WRITE)
+                .account(account)
+                .build();
+
+        var response1 = PowerOfAttorneyResponse.builder()
+                .id("1")
+                .grantorName("Alice")
+                .granteeName("Bob")
+                .authorization("READ")
+                .account(new AccountApiMapper().toResponse(account))
+                .build();
+
+        var response2 = PowerOfAttorneyResponse.builder()
+                .id("2")
+                .grantorName("Charlie")
+                .granteeName("Bob")
+                .authorization("WRITE")
+                .account(new AccountApiMapper().toResponse(account))
+                .build();
+
+        when(powerOfAttorneyService.findByGranteeName("Bob")).thenReturn(List.of(poa1, poa2));
+
+        when(powerOfAttorneyApiMapper.toResponse(poa1)).thenReturn(response1);
+        when(powerOfAttorneyApiMapper.toResponse(poa2)).thenReturn(response2);
+
+        mockMvc.perform(get("/api/v1/power-of-attorney")
+                        .param("granteeName", "Bob")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].granteeName").value("Bob"))
+                .andExpect(jsonPath("$[0].authorization").value("READ"))
+                .andExpect(jsonPath("$[1].authorization").value("WRITE"));
+
+        verify(powerOfAttorneyService).findByGranteeName("Bob");
+    }
+
+    @Test
+    void listByGrantee_shouldReturn200_withEmptyList() throws Exception {
+        when(powerOfAttorneyService.findByGranteeName("Nobody")).thenReturn(List.of());
+
+        mockMvc.perform(get("/api/v1/power-of-attorney").param("granteeName", "Nobody"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+
+        verify(powerOfAttorneyService).findByGranteeName("Nobody");
     }
 
     private Account getAccount(

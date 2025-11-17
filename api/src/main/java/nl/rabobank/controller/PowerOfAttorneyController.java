@@ -1,6 +1,7 @@
 package nl.rabobank.controller;
 
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import nl.rabobank.apimapper.PowerOfAttorneyApiMapper;
 import nl.rabobank.dto.PowerOfAttorneyRequest;
@@ -11,9 +12,11 @@ import nl.rabobank.service.PowerOfAttorneyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -35,5 +38,15 @@ public class PowerOfAttorneyController {
         var powerOfAttorney = powerOfAttorneyService.grantAccess(request);
         var response = powerOfAttorneyApiMapper.toResponse(powerOfAttorney);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<PowerOfAttorneyResponse>> listByGrantee(
+            @RequestParam("granteeName") String granteeName) {
+
+        var list = powerOfAttorneyService.findByGranteeName(granteeName);
+
+        return ResponseEntity.ok(
+                list.stream().map(powerOfAttorneyApiMapper::toResponse).toList());
     }
 }
