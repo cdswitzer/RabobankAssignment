@@ -1,10 +1,11 @@
 package nl.rabobank.service;
 
-import java.util.Optional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import nl.rabobank.account.Account;
 import nl.rabobank.apimapper.AccountApiMapper;
 import nl.rabobank.dto.AccountRequest;
+import nl.rabobank.exception.AccountNotFoundException;
 import nl.rabobank.exception.DuplicateAccountException;
 import nl.rabobank.mapper.AccountMapper;
 import nl.rabobank.repository.AccountRepository;
@@ -29,8 +30,16 @@ public class AccountService {
         return accountMapper.toDomain(accountRepository.save(document));
     }
 
-    public Optional<Account> getAccountByNumber(String accountNumber) {
-        return accountRepository.findByAccountNumber(accountNumber).map(accountMapper::toDomain);
+    public Account getByAccountNumber(String accountNumber) {
+        return accountRepository
+                .findByAccountNumber(accountNumber)
+                .map(accountMapper::toDomain)
+                .orElseThrow(() ->
+                        new AccountNotFoundException("Account with number '%s' not found".formatted(accountNumber)));
+    }
+
+    public List<Account> findAll() {
+        return accountRepository.findAll().stream().map(accountMapper::toDomain).toList();
     }
 
     public boolean existsByAccountNumber(String accountNumber) {

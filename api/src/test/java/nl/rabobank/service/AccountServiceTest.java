@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.Optional;
 import nl.rabobank.account.Account;
 import nl.rabobank.account.AccountType;
@@ -14,6 +15,7 @@ import nl.rabobank.account.SavingsAccount;
 import nl.rabobank.apimapper.AccountApiMapper;
 import nl.rabobank.document.AccountDocument;
 import nl.rabobank.dto.AccountRequest;
+import nl.rabobank.exception.AccountNotFoundException;
 import nl.rabobank.exception.DuplicateAccountException;
 import nl.rabobank.mapper.AccountMapper;
 import nl.rabobank.repository.AccountRepository;
@@ -115,9 +117,9 @@ class AccountServiceTest {
         when(accountRepository.findByAccountNumber("NL123456")).thenReturn(Optional.of(document));
         when(accountMapper.toDomain(document)).thenReturn(account);
 
-        Optional<Account> result = accountService.getAccountByNumber("NL123456");
+        var result = accountService.getByAccountNumber("NL123456");
 
-        assertThat(result).isPresent().get().satisfies(acc -> {
+        assertThat(result).isNotNull().satisfies(acc -> {
             assertThat(acc.accountNumber()).isEqualTo("NL123456");
             assertThat(acc.accountHolderName()).isEqualTo("John Doe");
             assertThat(acc.balance()).isEqualTo(1000.0);
@@ -130,9 +132,10 @@ class AccountServiceTest {
     void getAccountByNumber_shouldReturnOptionalEmpty_forNonExistingAccountNumber() {
         when(accountRepository.findByAccountNumber("NL123456")).thenReturn(Optional.empty());
 
-        Optional<Account> result = accountService.getAccountByNumber("NL123456");
+        assertThatThrownBy(() -> accountService.getByAccountNumber("NL123456"))
+                .isInstanceOf(AccountNotFoundException.class)
+                .hasMessage("Account with number 'NL123456' not found");
 
-        assertThat(result).isEmpty();
         verify(accountRepository).findByAccountNumber("NL123456");
     }
 
@@ -140,7 +143,7 @@ class AccountServiceTest {
     void existsByAccountNumber_shouldReturnTrue_whenAccountExists() {
         when(accountRepository.existsByAccountNumber("NL123456")).thenReturn(true);
 
-        boolean result = accountService.existsByAccountNumber("NL123456");
+        var result = accountService.existsByAccountNumber("NL123456");
 
         assertThat(result).isTrue();
         verify(accountRepository).existsByAccountNumber("NL123456");
@@ -150,7 +153,7 @@ class AccountServiceTest {
     void existsByAccountNumber_shouldReturnFalse_whenAccountDoesNotExists() {
         when(accountRepository.existsByAccountNumber("NL123456")).thenReturn(false);
 
-        boolean result = accountService.existsByAccountNumber("NL123456");
+        var result = accountService.existsByAccountNumber("NL123456");
 
         assertThat(result).isFalse();
         verify(accountRepository).existsByAccountNumber("NL123456");
@@ -162,6 +165,49 @@ class AccountServiceTest {
             case PAYMENT -> new PaymentAccount(accountNumber, accountHolderName, balance);
             case SAVINGS -> new SavingsAccount(accountNumber, accountHolderName, balance);
         };
+    }
+
+    @Test
+    void findAll_shouldReturnList_forAllAccounts() {
+        var doc1 = AccountDocument.builder()
+                .accountNumber("NL1")
+                .accountHolderName("John")
+                .balance(100.0)
+                .accountType(AccountType.PAYMENT)
+                .build();
+
+        var doc2 = AccountDocument.builder()
+                .accountNumber("NL2")
+                .accountHolderName("Mary")
+                .balance(200.0)
+                .accountType(AccountType.SAVINGS)
+                .build();
+
+        var acc1 = new PaymentAccount("NL1", "John", 100.0);
+        var acc2 = new SavingsAccount("NL2", "Mary", 200.0);
+
+        when(accountRepository.findAll()).thenReturn(List.of(doc1, doc2));
+        when(accountMapper.toDomain(doc1)).thenReturn(acc1);
+        when(accountMapper.toDomain(doc2)).thenReturn(acc2);
+
+        var result = accountService.findAll();
+
+        assertThat(result).hasSize(2).containsExactly(acc1, acc2);
+
+        verify(accountRepository).findAll();
+        verify(accountMapper).toDomain(doc1);
+        verify(accountMapper).toDomain(doc2);
+    }
+
+    @Test
+    void findAll_shouldReturnEmptyList_whenRepositoryEmpty() {
+        when(accountRepository.findAll()).thenReturn(List.of());
+
+        var result = accountService.findAll();
+
+        assertThat(result).isEmpty();
+
+        verify(accountRepository).findAll();
     }
 
     private AccountDocument getAccountDocument(Account account) {
