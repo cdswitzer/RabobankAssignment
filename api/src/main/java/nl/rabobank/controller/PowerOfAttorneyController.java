@@ -45,8 +45,7 @@ public class PowerOfAttorneyController {
             @RequestParam("granteeName") String granteeName) {
 
         var list = powerOfAttorneyService.findByGranteeName(granteeName);
-
-        return ResponseEntity.ok(
-                list.stream().map(powerOfAttorneyApiMapper::toResponse).toList());
+        var response = list.stream().map(powerOfAttorneyApiMapper::toResponse).toList();
+        return ResponseEntity.ok(response);
     }
 }
