@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
@@ -15,6 +16,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @EnableMongoRepositories(basePackages = "nl.rabobank.repository")
 @EnableConfigurationProperties(MongoProperties.class)
 @RequiredArgsConstructor
+@Profile("!test")
 public class MongoConfiguration extends AbstractMongoClientConfiguration {
     private final MongoProperties mongoProperties;
 
