@@ -1,6 +1,7 @@
 package nl.rabobank.controller;
 
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import nl.rabobank.apimapper.AccountApiMapper;
 import nl.rabobank.dto.AccountRequest;
@@ -9,6 +10,8 @@ import nl.rabobank.service.AccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,5 +30,18 @@ public class AccountController {
         var account = accountService.createAccount(request);
         var response = accountApiMapper.toResponse(account);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping(value = "/{accountNumber}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AccountResponse> getByAccountNumber(@PathVariable("accountNumber") String accountNumber) {
+        var account = accountService.getByAccountNumber(accountNumber);
+        return ResponseEntity.ok(accountApiMapper.toResponse(account));
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<AccountResponse>> listAll() {
+        var accounts = accountService.findAll();
+        return ResponseEntity.ok(
+                accounts.stream().map(accountApiMapper::toResponse).toList());
     }
 }
