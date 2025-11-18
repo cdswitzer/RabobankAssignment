@@ -25,6 +25,10 @@ From the root of the project run:
 docker compose up
 ```
 
+> NOTE: When shutting down the database, using `docker compose down`, the data is being stored locally.
+> If you want tot a clean database the next time you start the database, run docker compose down -v`.
+> It removes the volume and thus the data.
+
 When the database is started you can start the application:
 ```bash
 mvn -pl api spring-boot:run 
@@ -88,6 +92,8 @@ PowerOfAttorney:
 To make you life a bit easier, I provided a collection of request for the endpoints. 
 The collection can be found at `src/main/resources/postman_collection/collection.json`
 You can import this collection in an application like [Postman](https://www.postman.com/) and run the collections.
+
+
 
 # Original assignment
 
