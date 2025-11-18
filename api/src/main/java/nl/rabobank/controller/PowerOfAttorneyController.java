@@ -41,10 +41,13 @@ public class PowerOfAttorneyController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<PowerOfAttorneyResponse>> listByGrantee(
-            @RequestParam("granteeName") String granteeName) {
+    public ResponseEntity<List<PowerOfAttorneyResponse>> list(
+            @RequestParam(value = "granteeName", required = false) String granteeName) {
 
-        var list = powerOfAttorneyService.findByGranteeName(granteeName);
+        var list = granteeName != null
+                ? powerOfAttorneyService.findByGranteeName(granteeName)
+                : powerOfAttorneyService.findAll();
+
         var response = list.stream().map(powerOfAttorneyApiMapper::toResponse).toList();
         return ResponseEntity.ok(response);
     }

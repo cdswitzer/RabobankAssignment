@@ -41,4 +41,10 @@ public class PowerOfAttorneyService {
                 .map(powerOfAttorneyMapper::toDomain)
                 .toList();
     }
+
+    public List<PowerOfAttorney> findAll() {
+        return powerOfAttorneyRepository.findAll().stream()
+                .map(powerOfAttorneyMapper::toDomain)
+                .toList();
+    }
 }
