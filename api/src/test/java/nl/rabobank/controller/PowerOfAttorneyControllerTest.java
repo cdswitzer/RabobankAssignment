@@ -80,6 +80,7 @@ class PowerOfAttorneyControllerTest {
                 .build();
 
         when(accountService.existsByAccountNumber(any())).thenReturn(true);
+        when(accountService.getByAccountNumber("NL01TEST")).thenReturn(account);
         when(powerOfAttorneyService.grantAccess(any())).thenReturn(powerOfAttorney);
         when(powerOfAttorneyApiMapper.toResponse(powerOfAttorney)).thenReturn(powerOfAttorneyResponse);
 
@@ -129,7 +130,8 @@ class PowerOfAttorneyControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.detail").value("The grantor Peter is not the accountHolder for account NL01TEST"));
+                .andExpect(
+                        jsonPath("$.detail").value("The grantor Peter is not the accountHolder for account NL01TEST"));
     }
 
     @Test
