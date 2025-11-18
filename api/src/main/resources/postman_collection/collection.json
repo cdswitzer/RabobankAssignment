@@ -1,0 +1,184 @@
+{
+  "info": {
+    "name": "Bank Accounts & Power-of-Attorney API",
+    "_postman_id": "a1d23e45-b678-90cd-ef12-3456789abcde",
+    "description": "Postman collection for Accounts + Power Of Attorney API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "ACCOUNTS",
+      "item": [
+        {
+          "name": "Create Account - Payment - John Doe",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/v1/accounts",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountNumber\": \"NL100000001\",\n  \"accountHolderName\": \"John Doe\",\n  \"accountType\": \"PAYMENT\",\n  \"initialBalance\": 1500.00\n}"
+            }
+          },
+          "response": [],
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test(\"Status 201\", function() {",
+                "    pm.response.to.have.status(201);",
+                "});",
+                "",
+                "const body = pm.response.json();",
+                "pm.test(\"AccountHolderName heeft voor- en achternaam\", function () {",
+                "    pm.expect(body.accountHolderName.split(' ').length).to.be.greaterThan(1);",
+                "});",
+                "",
+                "pm.test(\"Balance is string\", function () {",
+                "    pm.expect(body.balance).to.be.a('string');",
+                "});"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Create Account - Savings - Mary Jane",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/v1/accounts",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountNumber\": \"NL100000002\",\n  \"accountHolderName\": \"Mary Jane\",\n  \"accountType\": \"SAVINGS\",\n  \"initialBalance\": 2500.00\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test(\"Status 201\", function() {",
+                "    pm.response.to.have.status(201);",
+                "});"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Create Account - Same holder, different types (Bob Marley)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/v1/accounts",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountNumber\": \"NL100000003\",\n  \"accountHolderName\": \"Bob Marley\",\n  \"accountType\": \"PAYMENT\",\n  \"initialBalance\": 500.00\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Account By Number",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/accounts/NL100000001"
+          }
+        },
+        {
+          "name": "List All Accounts",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/accounts"
+          }
+        }
+      ]
+    },
+    {
+      "name": "GRANTS (Power of Attorney)",
+      "item": [
+        {
+          "name": "Grant READ access (John Doe → Alice Cooper)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/power-of-attorney",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grantorName\": \"John Doe\",\n  \"granteeName\": \"Alice Cooper\",\n  \"authorization\": \"READ\",\n  \"accountNumber\": \"NL100000001\",\n  \"accountType\": \"PAYMENT\"\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                "const body = pm.response.json();",
+                "pm.test(\"Authorization is READ\", () => pm.expect(body.authorization).to.eql(\"READ\"));"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Grant WRITE access (John Doe → Alice Cooper)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/power-of-attorney",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grantorName\": \"John Doe\",\n  \"granteeName\": \"Alice Cooper\",\n  \"authorization\": \"WRITE\",\n  \"accountNumber\": \"NL100000001\",\n  \"accountType\": \"PAYMENT\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Grant multiple grantees (Mary Jane → [Bob Marley, Elvis Presley])",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/power-of-attorney",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grantorName\": \"Mary Jane\",\n  \"granteeName\": \"Bob Marley\",\n  \"authorization\": \"READ\",\n  \"accountNumber\": \"NL100000002\",\n  \"accountType\": \"SAVINGS\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Grant READ (Mary Jane → Elvis Presley)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/power-of-attorney",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grantorName\": \"Mary Jane\",\n  \"granteeName\": \"Elvis Presley\",\n  \"authorization\": \"READ\",\n  \"accountNumber\": \"NL100000002\",\n  \"accountType\": \"SAVINGS\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List All Grants",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/power-of-attorney"
+          }
+        },
+        {
+          "name": "List Grants by Grantee",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/power-of-attorney?granteeName=Alice Cooper"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ]
+}
