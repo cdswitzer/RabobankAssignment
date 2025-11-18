@@ -8,7 +8,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -86,7 +85,8 @@ class GlobalExceptionHandlerTest {
             assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
             assertThat(resp.getBody()).isNotNull();
             assertThat(resp.getBody().getStatus()).isEqualTo(403);
-            assertThat(resp.getBody().getDetail()).isEqualTo("The grantor Peter is not the accountHolder for account NL01TEST");
+            assertThat(resp.getBody().getDetail())
+                    .isEqualTo("The grantor Peter is not the accountHolder for account NL01TEST");
         });
     }
 }
