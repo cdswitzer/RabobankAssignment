@@ -111,6 +111,28 @@ class PowerOfAttorneyControllerTest {
     }
 
     @Test
+    void grantAccess_shouldReturn403_forGrantorNotAccountHolder() throws Exception {
+        var account = getAccount("NL01TEST", "Alice", 100.0, AccountType.valueOf("PAYMENT"));
+
+        var request = PowerOfAttorneyRequest.builder()
+                .grantorName("Peter")
+                .granteeName("Bob")
+                .accountNumber("NL01TEST")
+                .accountType("PAYMENT")
+                .authorization("READ")
+                .build();
+
+        when(accountService.existsByAccountNumber(any())).thenReturn(true);
+        when(accountService.getByAccountNumber("NL01TEST")).thenReturn(account);
+
+        mockMvc.perform(post("/api/v1/power-of-attorney")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.detail").value("The grantor Peter is not the accountHolder for account NL01TEST"));
+    }
+
+    @Test
     void grantAccess_shouldReturn400_forMissingFields() throws Exception {
         var request = PowerOfAttorneyRequest.builder()
                 .grantorName("Bart")

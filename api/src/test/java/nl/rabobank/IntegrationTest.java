@@ -13,6 +13,7 @@ import nl.rabobank.dto.PowerOfAttorneyRequest;
 import nl.rabobank.dto.PowerOfAttorneyResponse;
 import nl.rabobank.exception.AccountNotFoundException;
 import nl.rabobank.exception.DuplicateAccountException;
+import nl.rabobank.exception.GrantNotAllowedException;
 import nl.rabobank.repository.AccountRepository;
 import nl.rabobank.repository.PowerOfAttorneyRepository;
 import org.junit.jupiter.api.Assertions;
@@ -306,6 +307,23 @@ class IntegrationTest {
         assertThatThrownBy(() -> powerOfAttorneyController.grantAccess(powerOfAttorneyRequest))
                 .isInstanceOf(AccountNotFoundException.class)
                 .hasMessage("No account found with number: NL000000000");
+
+        var allPowerOfAttorneyDocumentsFromDatabase = powerOfAttorneyController.list(null);
+        assertStatusAndListSizeFromDatabase(allPowerOfAttorneyDocumentsFromDatabase, 0);
+    }
+
+    @Test
+    void post_shouldRejectPowerOfAttorney_forGrantorNotAccountHolder() throws Exception {
+        var accountRequest = getAccountRequest("NL999999999", "Valid AccountHolder", 1000.0, "PAYMENT");
+        var accountResponseResponseEntity = accountController.create(accountRequest);
+        assertAccountCreationResponseEntity(
+                "NL999999999", "Valid AccountHolder", 1000.0, "PAYMENT", accountResponseResponseEntity);
+
+        var powerOfAttorneyRequest =
+                getPowerOfAttorneyRequest("Invalid Grantor", "Grantee", "READ", "NL999999999", "PAYMENT");
+        assertThatThrownBy(() -> powerOfAttorneyController.grantAccess(powerOfAttorneyRequest))
+                .isInstanceOf(GrantNotAllowedException.class)
+                .hasMessage("The grantor Invalid Grantor is not the accountHolder for account NL999999999");
 
         var allPowerOfAttorneyDocumentsFromDatabase = powerOfAttorneyController.list(null);
         assertStatusAndListSizeFromDatabase(allPowerOfAttorneyDocumentsFromDatabase, 0);

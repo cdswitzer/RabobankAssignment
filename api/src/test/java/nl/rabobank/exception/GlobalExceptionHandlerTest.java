@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -73,5 +74,19 @@ class GlobalExceptionHandlerTest {
                 .contains("accountNumber is required")
                 .contains("accountHolderName")
                 .contains("accountHolderName is required");
+    }
+
+    @Test
+    void handleGrantNotAllowed_shouldReturnResponseEntity_forGrantNotAllowedException() {
+        var exception = new GrantNotAllowedException("The grantor Peter is not the accountHolder for account NL01TEST");
+
+        var response = exceptionHandler.handleGrantNotAllowed(exception);
+
+        assertThat(response).isNotNull().satisfies(resp -> {
+            assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+            assertThat(resp.getBody()).isNotNull();
+            assertThat(resp.getBody().getStatus()).isEqualTo(403);
+            assertThat(resp.getBody().getDetail()).isEqualTo("The grantor Peter is not the accountHolder for account NL01TEST");
+        });
     }
 }

@@ -38,4 +38,10 @@ public class GlobalExceptionHandler {
         var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(404), ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
     }
+
+    @ExceptionHandler(GrantNotAllowedException.class)
+    public ResponseEntity<ProblemDetail> handleGrantNotAllowed(GrantNotAllowedException ex) {
+        var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(403), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(problemDetail);
+    }
 }

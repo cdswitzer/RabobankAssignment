@@ -7,6 +7,7 @@ import nl.rabobank.apimapper.PowerOfAttorneyApiMapper;
 import nl.rabobank.dto.PowerOfAttorneyRequest;
 import nl.rabobank.dto.PowerOfAttorneyResponse;
 import nl.rabobank.exception.AccountNotFoundException;
+import nl.rabobank.exception.GrantNotAllowedException;
 import nl.rabobank.service.AccountService;
 import nl.rabobank.service.PowerOfAttorneyService;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,13 @@ public class PowerOfAttorneyController {
         if (!accountService.existsByAccountNumber(request.getAccountNumber())) {
             throw new AccountNotFoundException(
                     "No account found with number: %s".formatted(request.getAccountNumber()));
+        }
+
+        var account = accountService.getByAccountNumber(request.getAccountNumber());
+
+        if (!account.accountHolderName().equals(request.getGrantorName())) {
+            throw new GrantNotAllowedException("The grantor %s is not the accountHolder for account %s"
+                    .formatted(request.getGrantorName(), request.getAccountNumber()));
         }
 
         var powerOfAttorney = powerOfAttorneyService.grantAccess(request);
