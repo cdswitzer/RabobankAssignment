@@ -1,3 +1,96 @@
+# Implementation
+This implementation of the Rabobank Assignment for Authorizations Area is made by Cor Switzer.
+The original assignment can be found at the bottom of this document.
+
+Before running the application the following is required:
+* Idea - Clone and load project
+* Java 21
+* Maven 3.9 (or later)
+* Docker
+* Postman
+
+Optional:
+* MongoDB Compass (if you want to take a look in de database yourself)
+
+## Build
+Because the project uses spotless to force a codestyle, spotless needs to be run as well.
+```bash
+mvn spotless:apply clean install
+```
+
+## Running locally
+To run the application on your local machine you'll need a MongoDB database to store data.
+From the root of the project run:
+```bash
+docker compose up
+```
+
+When the database is started you can start the application:
+```bash
+mvn -pl api spring-boot:run 
+```
+
+> NOTE: If you made changes after building and before running, it is possible that maven starts complaning about spotless checks.
+> In that case you need to add `spotless:apply` to you mvn command. 
+
+> NOTE: if you made any changes to the docker-compose.yaml, like username, password, database etc., 
+> make sure you also apply these changes to the application.
+> The `application.yaml` is found under `/data/src/main/resources/`.
+
+## Running request
+When everything is running, you should be able to execute request to the application.
+If no changes are made, the API will be accessible on http://localhost:8080
+
+### Implemented endpoints
+Account:
+* POST - `/api/v1/accounts`
+  * Accepts a AccountRequest:
+    * ```json
+        {
+            "accountNumber": "NL100000001",
+            "accountHolderName": "John Doe",
+            "accountType": "PAYMENT",
+            "initialBalance": 1500.00
+        }
+        ```
+    * Returns 201 with an account
+    * Returns 409 if account already exist
+* GET - `/api/v1/accounts`
+  * Returns 200
+    * Returns a list of all accounts if the exists, otherwise an empty list will be returned.
+* GET - `/api/v1/accounts/{accountNumber}`
+  * Accepts a accountNumber(String)
+  * Returns 200 with an account if the account is found
+  * Returns 404 if the account does not exist
+
+PowerOfAttorney:
+* POST - `/api/v1/power-of-attorney`
+  * Accepts a PowerOfAttorneyRequest:
+    * ```json
+      {
+        "grantorName": "John Doe",
+        "granteeName": "Alice Cooper",
+        "authorization": "READ",
+        "accountNumber": "NL100000001",
+        "accountType": "PAYMENT"
+       }
+        ```
+  * Returns 201 with a power of attorney
+  * Returns 404 if the account does not exist
+  * Returns 403 if the grantor is not the account holder
+* GET - `/api/v1/power-of-attorney`
+  * Accepts an optional parameter `granteeName`
+    * If provided
+      * Returns 200 with all power of attorney for given grantee.
+    * If not provided
+      * Returns 200 with a list of all power of attorney if they exist, otherwise an empty list will be returned.
+
+To make you life a bit easier, I provided a collection of request for the endpoints. 
+The collection can be found at `src/main/resources/postman_collection/collection.json`
+You can import this collection in an application like [Postman](https://www.postman.com/) and run the collections.
+
+# Original assignment
+
 ## Rabobank Assignment for Authorizations Area
 
 This project contains several premade modules for you to implement your code. We hope this helps you with ´what to put
